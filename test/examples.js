@@ -6,7 +6,7 @@ require('dotenv').config()
 const glob = require('glob')
 const proxyquire = require('proxyquire').noCallThru()
 
-const GitHubApi = require('../lib')
+const GitHubApi = require('../')
 
 const examplesPaths = glob.sync('*.js', {
   cwd: pathResolve(process.cwd(), 'examples')
@@ -14,15 +14,15 @@ const examplesPaths = glob.sync('*.js', {
 
 examplesPaths.forEach(runExample)
 
-function runExample (name) {
+function runExample (name, i) {
   proxyquire(`../examples/${name}`, {
     'github': function (options) {
       if (!options) options = {}
       options.debug = false
       const github = new GitHubApi(options)
 
-      // set a EXAMPLES_GITHUB_TOKEN environment variable to avoid
-      // running against GitHub's rate limiting
+        // set a EXAMPLES_GITHUB_TOKEN environment variable to avoid
+        // running against GitHub's rate limiting
       if (process.env.EXAMPLES_GITHUB_TOKEN) {
         github.authenticate({
           type: 'token',
@@ -46,7 +46,7 @@ process.on('unhandledRejection', (error) => {
     return
   }
 
-  if (/getaddrinfo ENOTFOUND github.my-GHE-enabled-company.com/.test(error.message)) {
+  if (/getaddrinfo ENOTFOUND github.my-ghe-enabled-company.com/.test(error.message)) {
     // expected error from enterpriseUploadAsset, ignore
     return
   }
